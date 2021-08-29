@@ -105,7 +105,13 @@ int menu(){
     return opcion;
 }
 
-void save(Snodo *agenda){
+
+/*//////////////////////////////////////////////////////
+█▀ ▄▀█ █░█ █▀▀   ▄▀█ █▄░█ █▀▄   █░░ █▀█ ▄▀█ █▀▄
+▄█ █▀█ ▀▄▀ ██▄   █▀█ █░▀█ █▄▀   █▄▄ █▄█ █▀█ █▄▀
+//////////////////////////////////////////////////////*/
+void save(Snodo *agenda)
+{
     FILE* save;
     save = fopen("save.txt", "w");
     Snodo* nodo = agenda;
@@ -121,6 +127,7 @@ void save(Snodo *agenda){
         }
     fclose(save);
 }
+
 
 int muestraContactos(Snodo*agenda, int contar)
 {
@@ -348,6 +355,7 @@ int main()
     char buffer[MAXIMO];
     char confirmacion;
     int opcion;
+    load(agenda);
     while(opcion != 7)
     {
         opcion = menu();

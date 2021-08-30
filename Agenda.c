@@ -80,11 +80,14 @@ void pedirDatos(Snodo* NuevoNodo){                             //Funcion para re
  //usamos una lista simple que agrega al inicio porque no veiamos necesidad de utilizar nada más complejo//
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Snodo* nuevoContacto(Snodo* agenda)                     
+Snodo* nuevoContacto(Snodo* agenda, int loadOrNew)                     
 {   //pido un lugar para un nodo nuevo                  
     Snodo* nuevoNodo = malloc(sizeof(Snodo));
     nuevoNodo->sig = agenda;
+    if(loadOrNew == 2)
+    {
     pedirDatos(nuevoNodo);
+    }
     clear();
     return nuevoNodo;
     //devuelvo el nodo que apunta al anterior inicio de agenda
@@ -106,10 +109,12 @@ int menu(){
 }
 
 
-/*//////////////////////////////////////////////////////
-█▀ ▄▀█ █░█ █▀▀   ▄▀█ █▄░█ █▀▄   █░░ █▀█ ▄▀█ █▀▄
-▄█ █▀█ ▀▄▀ ██▄   █▀█ █░▀█ █▄▀   █▄▄ █▄█ █▀█ █▄▀
-//////////////////////////////////////////////////////*/
+//////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////█▀ ▄▀█ █░█ █▀▀   ▄▀█ █▄░█ █▀▄   █░░ █▀█ ▄▀█ █▀▄////////////////////////////
+///////////////////////▄█ █▀█ ▀▄▀ ██▄   █▀█ █░▀█ █▄▀   █▄▄ █▄█ █▀█ █▄▀////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 void save(Snodo *agenda)
 {
     FILE* save;
@@ -129,31 +134,49 @@ void save(Snodo *agenda)
 }
 
 
-void load(Snodo*agenda, char str[])
-{
-    
+void loader(Snodo*agenda, char str[])
+{                                           // loadeo todo. cuando termina tengo esta struct apuntando a un NULL
+    char *token = strtok(str, ",");
+    agenda->datos.nombre = token;
+    token = strtok(NULL, ",");
+    agenda->datos.direccion = token;
+    token = strtok(NULL, ",");                      //Esto me genera dolor.
+    agenda->datos.telefono = token;
+    token = strtok(NULL, ",");
+    agenda->datos.mail = token;
+    token = strtok(NULL, ",");
+    agenda->datos.aliasTelegram = token;
+    token = strtok(NULL, ",");
+    agenda->datos.usuarioInstagram = token;
 }
 
 
-void separador(Snodo *agenda, int largo)
+void separador(Snodo *agenda, int largo)                
 {
     FILE* load;
     char *str,c;
     int i,k=0;
+
+
     str = malloc(sizeof(char)*largo);
-    load = fopen("save.txt", "r");
+    load = fopen("save.txt","r");
     c = fgetc(load);
+
     for(i=0;i<largo;i++)
-    {
+    {                                            // creo una string que contiene los datos del save.txt, cuando me encuentro con un \n o un \0
         str[k] = c;
         k++;
-        if(c=='\n')
+        if(c=='\n' || c == '\0')
         {
-            str[k] = '\0';
-            load(agenda,str);
+            agenda = nuevoContacto(agenda,1);     // pido un lugar en memoria para la agenda.
+            str[k+1] = '\0';                      //si se encuentra con uno de esos casos le agrego un terminador
+            loader(agenda,str);                   // y lo mando a loadear
+            k = 0;
         }
         c = fgetc(load);
     }
+    free(str);//libero la string
+    fclose(load);
 }
 
 
@@ -165,15 +188,18 @@ void contador(Snodo *agenda)
     cont = fopen("save.txt","r");
     if(cont==NULL)
     {
-        exit(0);
+        exit(0);                //si save esta vacio no me voy.
     }
+    
     c = fgetc(cont);
     while(c != EOF)
     {
         c = fgetc(cont);
-        contador++;
+        contador++;    //cuento las letras hasta el final del archivo.
     }
+
     fclose(cont);
+    separador(agenda,contador);
 }
 
 
@@ -400,13 +426,14 @@ int main()
     char buffer[MAXIMO];
     char confirmacion;
     int opcion;
+    contador(agenda);
     while(opcion != 7)
     {
         opcion = menu();
         switch(opcion)
         {
             case 1:
-                agenda = nuevoContacto(agenda);
+                agenda = nuevoContacto(agenda,2);
                 break;
             case 2:
                 muestraContactos(agenda);

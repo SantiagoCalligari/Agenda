@@ -129,26 +129,60 @@ void save(Snodo *agenda)
 }
 
 
-void load(Snodo *agenda)
+void load(Snodo*agenda, char str[])
 {
-    FILE *load;
-    int bandera = 1, display;
-    load = fopen("save.txt","r");
-    while(bandera && load!=NULL)
-    {
-        display = fgetc(load);
-        if(feof(display)!=0)
-        bandera = 0;
-        printf("%c",display);
-    }
-    if(load!=NULL)
-    fclose(load);
+    
 }
 
 
-int muestraContactos(Snodo*agenda, int contar)
+void separador(Snodo *agenda, int largo)
 {
-    int NumeroDeContactos = 0;
+    FILE* load;
+    char *str,c;
+    int i,k=0;
+    str = malloc(sizeof(char)*largo);
+    load = fopen("save.txt", "r");
+    c = fgetc(load);
+    for(i=0;i<largo;i++)
+    {
+        str[k] = c;
+        k++;
+        if(c=='\n')
+        {
+            str[k] = '\0';
+            load(agenda,str);
+        }
+        c = fgetc(load);
+    }
+}
+
+
+void contador(Snodo *agenda)
+{
+    FILE* cont;
+    char c;
+    int contador = 0;
+    cont = fopen("save.txt","r");
+    if(cont==NULL)
+    {
+        exit(0);
+    }
+    c = fgetc(cont);
+    while(c != EOF)
+    {
+        c = fgetc(cont);
+        contador++;
+    }
+    fclose(cont);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void muestraContactos(Snodo*agenda)
+{
     clear();
     //uso nodo auxiliar para comenzar a recorrer la agenda
     Snodo* nodo = agenda;
@@ -161,20 +195,14 @@ int muestraContactos(Snodo*agenda, int contar)
 
     while(nodo != NULL)
     {
-        NumeroDeContactos++;
-        while(contar == 0)
-        {
             printf("\nNombre: %s\n",nodo->datos.nombre);
             printf("Direccion: %s\n",nodo->datos.direccion);
             printf("Telefono: %s\n",nodo->datos.telefono);
             printf("Mail: %s\n",nodo->datos.mail);
             printf("Telegram: %s\n",nodo->datos.aliasTelegram);
             printf("Instagram: %s\n\n",nodo->datos.usuarioInstagram);
-            contar = 1;
-        }
         nodo = nodo -> sig;
     }
-    return NumeroDeContactos;
 }
 
 
@@ -372,7 +400,6 @@ int main()
     char buffer[MAXIMO];
     char confirmacion;
     int opcion;
-    load(agenda);
     while(opcion != 7)
     {
         opcion = menu();
@@ -382,7 +409,7 @@ int main()
                 agenda = nuevoContacto(agenda);
                 break;
             case 2:
-                muestraContactos(agenda, 0);
+                muestraContactos(agenda);
                 printf("Desea continuar? [S/n]");
                 dato(&confirmacion);
                 if(confirmacion == 'n')

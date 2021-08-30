@@ -129,6 +129,23 @@ void save(Snodo *agenda)
 }
 
 
+void load(Snodo *agenda)
+{
+    FILE *load;
+    int bandera = 1, display;
+    load = fopen("save.txt","r");
+    while(bandera && load!=NULL)
+    {
+        display = fgetc(load);
+        if(feof(display)!=0)
+        bandera = 0;
+        printf("%c",display);
+    }
+    if(load!=NULL)
+    fclose(load);
+}
+
+
 int muestraContactos(Snodo*agenda, int contar)
 {
     int NumeroDeContactos = 0;

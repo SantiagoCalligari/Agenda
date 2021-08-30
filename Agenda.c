@@ -27,6 +27,31 @@ void dato(char *punt)
 }
 
 
+void muestraContactos(Snodo*agenda)
+{
+    clear();
+    //uso nodo auxiliar para comenzar a recorrer la agenda
+    Snodo* nodo = agenda;
+    if(agenda == NULL)
+    {
+        //si agenda esta vacia imprime esto y corta el codigo.
+        printf("Su agenda esta vacia. Para añadir un contacto");
+        printf(" ingrese la opcion 1 en el menu siguiente: \n");
+    }
+
+    while(nodo != NULL)
+    {
+            printf("\nNombre: %s\n",nodo->datos.nombre);
+            printf("Direccion: %s\n",nodo->datos.direccion);
+            printf("Telefono: %s\n",nodo->datos.telefono);
+            printf("Mail: %s\n",nodo->datos.mail);
+            printf("Telegram: %s\n",nodo->datos.aliasTelegram);
+            printf("Instagram: %s\n\n",nodo->datos.usuarioInstagram);
+        nodo = nodo -> sig;
+    }
+}
+
+
 void clear()
 {
   //Funcion para limpiar un poco la pantalla.
@@ -154,16 +179,16 @@ Snodo* loader(Snodo*agenda, char str[])
     token = strtok(NULL, ",");
     agenda->datos.usuarioInstagram = malloc(sizeof(char)*50);
     agenda->datos.usuarioInstagram = token;
+    muestraContactos(agenda);
     return agenda;
 }
 
 
-void separador(Snodo *agenda, int largo)                
+Snodo* separador(Snodo *agenda, int largo)                
 {
     FILE* load;
     char *str,c;
     int i,k=0;
-
 
     str = malloc(sizeof(char)*largo);
     load = fopen("save.txt","r");
@@ -187,7 +212,7 @@ void separador(Snodo *agenda, int largo)
 }
 
 
-void contador(Snodo *agenda)
+Snodo* contador(Snodo *agenda)
 {
     FILE* cont;
     char c;
@@ -206,37 +231,13 @@ void contador(Snodo *agenda)
     }
 
     fclose(cont);
-    separador(agenda,contador);
+    agenda = separador(agenda,contador);
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void muestraContactos(Snodo*agenda)
-{
-    clear();
-    //uso nodo auxiliar para comenzar a recorrer la agenda
-    Snodo* nodo = agenda;
-    if(agenda == NULL)
-    {
-        //si agenda esta vacia imprime esto y corta el codigo.
-        printf("Su agenda esta vacia. Para añadir un contacto");
-        printf(" ingrese la opcion 1 en el menu siguiente: \n");
-    }
-
-    while(nodo != NULL)
-    {
-            printf("\nNombre: %s\n",nodo->datos.nombre);
-            printf("Direccion: %s\n",nodo->datos.direccion);
-            printf("Telefono: %s\n",nodo->datos.telefono);
-            printf("Mail: %s\n",nodo->datos.mail);
-            printf("Telegram: %s\n",nodo->datos.aliasTelegram);
-            printf("Instagram: %s\n\n",nodo->datos.usuarioInstagram);
-        nodo = nodo -> sig;
-    }
-}
 
 
 void mostrarBusqueda(Contacto Muestra)
@@ -433,7 +434,7 @@ int main()
     char buffer[MAXIMO];
     char confirmacion;
     int opcion;
-    contador(agenda);
+    agenda = contador(agenda);
     while(opcion != 7)
     {
         opcion = menu();

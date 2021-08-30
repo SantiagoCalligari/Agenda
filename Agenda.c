@@ -134,20 +134,27 @@ void save(Snodo *agenda)
 }
 
 
-void loader(Snodo*agenda, char str[])
+Snodo* loader(Snodo*agenda, char str[])
 {                                           // loadeo todo. cuando termina tengo esta struct apuntando a un NULL
     char *token = strtok(str, ",");
-    agenda->datos.nombre = token;
+    agenda->datos.nombre = malloc(sizeof(char)*50);
+    agenda->datos.nombre = token;                                   //NO MALLOCQUEAS LAS STR
     token = strtok(NULL, ",");
+    agenda->datos.direccion = malloc(sizeof(char)*50);
     agenda->datos.direccion = token;
     token = strtok(NULL, ",");                      //Esto me genera dolor.
+    agenda->datos.telefono = malloc(sizeof(char)*50);
     agenda->datos.telefono = token;
     token = strtok(NULL, ",");
+    agenda->datos.mail = malloc(sizeof(char)*50);
     agenda->datos.mail = token;
     token = strtok(NULL, ",");
+    agenda->datos.aliasTelegram = malloc(sizeof(char)*50);
     agenda->datos.aliasTelegram = token;
     token = strtok(NULL, ",");
+    agenda->datos.usuarioInstagram = malloc(sizeof(char)*50);
     agenda->datos.usuarioInstagram = token;
+    return agenda;
 }
 
 
@@ -170,7 +177,7 @@ void separador(Snodo *agenda, int largo)
         {
             agenda = nuevoContacto(agenda,1);     // pido un lugar en memoria para la agenda.
             str[k+1] = '\0';                      //si se encuentra con uno de esos casos le agrego un terminador
-            loader(agenda,str);                   // y lo mando a loadear
+            agenda = loader(agenda,str);                   // y lo mando a loadear
             k = 0;
         }
         c = fgetc(load);

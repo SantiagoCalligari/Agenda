@@ -17,6 +17,19 @@ typedef struct _Snodo{
 } Snodo;
 
 
+void clear()
+{
+  //Funcion para limpiar un poco la pantalla.
+    int i = 0;
+    while(i != 20)
+    {
+        printf("\n");
+        i++;
+    }
+
+}
+
+
 void dato(char *punt)
 {
     //Almacena en el puntero del tipo char el dato.
@@ -52,49 +65,26 @@ void muestraContactos(Snodo*agenda)
 }
 
 
-void clear()
-{
-  //Funcion para limpiar un poco la pantalla.
-    int i = 0;
-    while(i != 20)
-    {
-        printf("\n");
-        i++;
-    }
-
-}
-
 
 void pedirDatos(Snodo* NuevoNodo){                             //Funcion para rellenar un nuevo nodo.
   //limpio el buffer.
     getchar();
   //vamos rellenando uno por uno los datos alojandolos con malloc y asignandolos con scanf
-    NuevoNodo->datos.nombre = malloc(sizeof(char)*50);
     printf("Ingresa el nombre:\n");
     scanf("%[^\n]",NuevoNodo->datos.nombre);
     getchar();
-
-    NuevoNodo->datos.direccion = malloc(sizeof(char)*50);
     printf("Ingresa la direccion:\n");
     scanf("%[^\n]",NuevoNodo->datos.direccion);
     getchar();
-
-    NuevoNodo->datos.telefono = malloc(sizeof(char)*50);
     printf("Ingresa el telefono:\n");
     scanf("%[^\n]",NuevoNodo->datos.telefono);
     getchar();
-
-    NuevoNodo->datos.mail = malloc(sizeof(char)*50);
     printf("Ingresa el mail:\n");
     scanf("%[^\n]",NuevoNodo->datos.mail);
     getchar();
-
-    NuevoNodo->datos.aliasTelegram = malloc(sizeof(char)*50);
     printf("Ingresa el AliasTelegram:\n");
     scanf("%[^\n]",NuevoNodo->datos.aliasTelegram);
     getchar();
-
-    NuevoNodo->datos.usuarioInstagram = malloc(sizeof(char)*50);
     printf("Ingresa el nombre de insta pa :\n");
     scanf("%[^\n]",NuevoNodo->datos.usuarioInstagram);
     getchar();
@@ -109,6 +99,12 @@ Snodo* nuevoContacto(Snodo* agenda, int loadOrNew)
 {   //pido un lugar para un nodo nuevo                  
     Snodo* nuevoNodo = malloc(sizeof(Snodo));
     nuevoNodo->sig = agenda;
+    nuevoNodo->datos.nombre = malloc(sizeof(char)*50);
+    nuevoNodo->datos.usuarioInstagram = malloc(sizeof(char)*50);
+    nuevoNodo->datos.aliasTelegram = malloc(sizeof(char)*50);
+    nuevoNodo->datos.mail = malloc(sizeof(char)*50);
+    nuevoNodo->datos.telefono = malloc(sizeof(char)*50);
+    nuevoNodo->datos.direccion = malloc(sizeof(char)*50);
     if(loadOrNew == 2)
     {
     pedirDatos(nuevoNodo);
@@ -161,77 +157,34 @@ void save(Snodo *agenda)
 
 Snodo* loader(Snodo*agenda, char str[])
 {                                           // loadeo todo. cuando termina tengo esta struct apuntando a un NULL
-    char *token = strtok(str, ",");
-    agenda->datos.nombre = malloc(sizeof(char)*50);
-    agenda->datos.nombre = token;                                   //NO MALLOCQUEAS LAS STR
-    token = strtok(NULL, ",");
-    agenda->datos.direccion = malloc(sizeof(char)*50);
-    agenda->datos.direccion = token;
-    token = strtok(NULL, ",");                      //Esto me genera dolor.
-    agenda->datos.telefono = malloc(sizeof(char)*50);
-    agenda->datos.telefono = token;
-    token = strtok(NULL, ",");
-    agenda->datos.mail = malloc(sizeof(char)*50);
-    agenda->datos.mail = token;
-    token = strtok(NULL, ",");
-    agenda->datos.aliasTelegram = malloc(sizeof(char)*50);
-    agenda->datos.aliasTelegram = token;
-    token = strtok(NULL, ",");
-    agenda->datos.usuarioInstagram = malloc(sizeof(char)*50);
-    agenda->datos.usuarioInstagram = token;
-    muestraContactos(agenda);
+    //agenda->datos.nombre = malloc(sizeof(char)*50);
+    //strcpy(strtok(str, ","),agenda->datos.nombre);
+    strcpy(agenda->datos.nombre,strtok(str, ","));                               //NO MALLOCQUEAS LAS STR
+    strcpy(agenda->datos.direccion,strtok(NULL, ","));                      //Esto me genera dolor.
+    strcpy(agenda->datos.telefono,strtok(NULL, ","));
+    strcpy(agenda->datos.mail,strtok(NULL, ","));
+    strcpy(agenda->datos.aliasTelegram,strtok(NULL, ","));
+    strcpy(agenda->datos.usuarioInstagram,strtok(NULL, ","));
     return agenda;
-}
-
-
-Snodo* separador(Snodo *agenda, int largo)                
-{
-    FILE* load;
-    char *str,c;
-    int i,k=0;
-
-    str = malloc(sizeof(char)*largo);
-    load = fopen("save.txt","r");
-    c = fgetc(load);
-
-    for(i=0;i<largo;i++)
-    {                                            // creo una string que contiene los datos del save.txt, cuando me encuentro con un \n o un \0
-        str[k] = c;
-        k++;
-        if(c=='\n' || c == '\0')
-        {
-            agenda = nuevoContacto(agenda,1);     // pido un lugar en memoria para la agenda.
-            str[k+1] = '\0';                      //si se encuentra con uno de esos casos le agrego un terminador
-            agenda = loader(agenda,str);                   // y lo mando a loadear
-            k = 0;
-        }
-        c = fgetc(load);
-    }
-    free(str);//libero la string
-    fclose(load);
 }
 
 
 Snodo* contador(Snodo *agenda)
 {
-    FILE* cont;
-    char c;
-    int contador = 0;
-    cont = fopen("save.txt","r");
-    if(cont==NULL)
-    {
+    FILE* line2mat;
+    char temp[300],c;
+    line2mat = fopen("save.txt","r");
+    if(line2mat==NULL)
         exit(0);                //si save esta vacio no me voy.
-    }
-    
-    c = fgetc(cont);
-    while(c != EOF)
+    while(fscanf(line2mat, "%[^\n]\n", temp) != EOF)
     {
-        c = fgetc(cont);
-        contador++;    //cuento las letras hasta el final del archivo.
-    }
+        
+        agenda = nuevoContacto(agenda,1);
 
-    fclose(cont);
-    agenda = separador(agenda,contador);
+        agenda = loader(agenda,temp); 
+    }
+    fclose(line2mat);
+    return agenda;
 }
 
 
@@ -511,7 +464,7 @@ int main()
                 break;
         }
     }
-    save(agenda);
+    //save(agenda);
     agenda = eliminarTodosContactos(agenda);
     free(agenda);
     return 0;
